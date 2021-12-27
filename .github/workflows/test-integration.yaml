@@ -8,16 +8,12 @@ name: Flutter integration test
 jobs:
   drive_android:
     runs-on: macos-latest
-    # env:
-    #   KEY_PATH_DEV: key.jks
-    #   flutter_path: /Users/runner/hostedtoolcache/flutter
     strategy:
       matrix:
         api-level: [29]
         target: [playstore]
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/checkout@v1
       # - name: Cache Flutter
       #   id: cache-flutter
       #   uses: actions/cache@v1
