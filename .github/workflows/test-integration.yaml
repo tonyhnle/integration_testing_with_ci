@@ -62,7 +62,7 @@ jobs:
           force-avd-creation: false
           arch: x86_64
           api-level: ${{ matrix.api-level }}
-          script: sh ./scripts/run_integration_test.sh
+          script: flutter drive --driver=test_driver/integration_test.dart --target=integration_test/increment_success_test.dart
 
       # Update screenshot to artifact
       - name: Upload screenshots
