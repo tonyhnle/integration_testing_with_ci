@@ -25,6 +25,7 @@ jobs:
         with:
           target: ${{ matrix.target }}
           api-level: ${{ matrix.api-level }}
+          emulator-build: 7425822
           arch: x86_64
           profile: Nexus 6
           script: flutter drive --driver=test_driver/integration_test.dart --target=integration_test/increment_success_test.dart
