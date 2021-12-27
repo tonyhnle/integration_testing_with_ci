@@ -1,0 +1,73 @@
+on:
+  push:
+    tags-ignore:
+      - '**'
+    branches:
+      - '**'
+name: Flutter integration test
+jobs:
+  drive_android:
+    runs-on: macos-latest
+    # env:
+    #   KEY_PATH_DEV: key.jks
+    #   flutter_path: /Users/runner/hostedtoolcache/flutter
+    strategy:
+      matrix:
+        api-level: [29]
+        target: [playstore]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/checkout@v1
+      # - name: Cache Flutter
+      #   id: cache-flutter
+      #   uses: actions/cache@v1
+      #   with:
+      #     path: ${{ env.flutter_path }}
+      #     key: ${{ runner.os }}-flutter
+      - uses: subosito/flutter-action@v1
+        with:
+          flutter-version: '2.8.1'
+          channel: 'stable'
+      # Cache AVD snapshot for build faster
+      # - name: Gradle cache
+      #   uses: actions/cache@v2
+      #   with:
+      #     path: |
+      #       ~/.gradle/caches
+      #       ~/.gradle/wrapper
+      #     key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}-${{ hashFiles('**/buildSrc/**/*.kt') }}
+      # - name: AVD cache
+      #   uses: actions/cache@v2
+      #   id: avd-cache
+      #   with:
+      #     path: |
+      #       ~/.android/avd/*
+      #       ~/.android/adb*
+      #     key: avd-${{ matrix.api-level }}
+      # - name: create AVD and generate snapshot for caching
+      #   if: steps.avd-cache.outputs.cache-hit != 'true'
+      #   uses: reactivecircus/android-emulator-runner@v2.21.0
+      #   with:
+      #     api-level: ${{ matrix.api-level }}
+      #     force-avd-creation: false
+      #     emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+      #     disable-animations: false
+      #     script: echo "Generated AVD snapshot for caching."
+
+      # Run integration test
+      - name: Run Flutter Driver tests
+        uses: reactivecircus/android-emulator-runner@v2.21.0
+        with:
+          target: ${{ matrix.target }}
+          force-avd-creation: false
+          arch: x86_64
+          api-level: ${{ matrix.api-level }}
+          script: sh ./scripts/run_integration_test.sh
+
+      # Update screenshot to artifact
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v1
+        with:
+          name: screenshot
+          path: ${{ matrix.path }}screenshots/
