@@ -55,7 +55,6 @@ jobs:
         uses: reactivecircus/android-emulator-runner@v2.21.0
         with:
           target: ${{ matrix.target }}
-          force-avd-creation: false
           arch: x86_64
           api-level: ${{ matrix.api-level }}
           script: flutter drive --driver=test_driver/integration_test.dart --target=integration_test/increment_success_test.dart
