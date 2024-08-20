@@ -19,14 +19,24 @@ jobs:
           flutter-version: '2.8.1'
           channel: 'stable'
 
-      # Run integration test
-      - name: Run Flutter Driver tests
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Create AVD and start emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
           target: ${{ matrix.target }}
           api-level: ${{ matrix.api-level }}
-          arch: x86_64
-          profile: Nexus 6
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: true
           script: flutter drive --driver=test_driver/integration_test.dart --target=integration_test/increment_success_test.dart
 
       # Update screenshot to artifact
